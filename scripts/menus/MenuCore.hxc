@@ -1,11 +1,24 @@
+/**
+ * Base game icon script.
+ */
+
 package kade.menucore;
+
+import funkin.ui.mainmenu.MainMenuState;
 
 import funkin.modding.module.Module;
 import flixel.FlxState;
 
 class MenuCore extends Module {
+    var modName = "Funkin";
+    var modDescription = "Friday Night Funkin'";
+    var modAssetKey = "mc_base";
+
+    var modState = new MainMenuState();
+
     public function new() {
-        super("MenuCore", 3);
+        // Priority is set to 2 here.
+        super("MenuCore", 2);
     }
     
     public function isMenuSwitch(state:FlxState):Bool {
@@ -18,7 +31,7 @@ class MenuCore extends Module {
         if (!isMenuSwitch(event.targetState))
             return;
 
-        event.targetState.addVersion("Funkin", "mc_base", "Friday Night Funkin'", new funkin.ui.mainmenu.MainMenuState());
+        event.targetState.addVersion(modName, modAssetKey, modDescription, modState);
         event.targetState.populateVersions();
     }
 }

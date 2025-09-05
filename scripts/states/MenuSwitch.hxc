@@ -102,7 +102,7 @@ class MenuSwitch extends MusicBeatState {
         for (text in addedtexts) {
             remove(text);
         }
-        
+
         for (i in 0...versions.length) {
             var versionName = versions[i];
             var versionImage = versionImages[i];
