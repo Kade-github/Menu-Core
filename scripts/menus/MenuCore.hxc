@@ -25,7 +25,7 @@ class MenuCore extends Module {
     
     public override function onCreate(event):Void {
         super.onCreate(event);
-        
+
         var mcHandle = ModuleHandler.getModule("MC_TitleStateHook");
         if (mcHandle == null) {
             trace("MenuCore: MC_TitleStateHook not found!");

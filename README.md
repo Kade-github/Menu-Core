@@ -31,7 +31,7 @@ class HMenuCore extends Module {
 
     public function new() {
         // Priority is set to 3 here.
-        super("MenuCore", 3);
+        super("HMenuCore", 3);
     }
     
     public override function onCreate(event):Void {
