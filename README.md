@@ -1,6 +1,8 @@
 # Menu Core
 > A FNF helper mod to enable multiple custom main menus and mod content switching.
 
+**Current Funkin' Version:** `0.7.4`
+
 A Friday Night Funkin' mod to enable a custom menu at the start of the game. This menu will allow the user to switch between different mods and their own custom menus, to allow for custom mod content to be enabled/disabled, or grouped together.
 
 <img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/52320c53-0084-4494-8376-c11ec65e7125" />
@@ -85,6 +87,11 @@ Then take that state and instantiate it in that variable.
 The next step is to take the `mc_template.png` asset and change it to your mod's own icon.
 
 Then put it in your mods `shared/images/` folder, and you'll be done!
+
+### Todo
+
+- Mobile Support
+- Animation for selection
 
 ### Credits
 
