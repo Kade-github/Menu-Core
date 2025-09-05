@@ -18,6 +18,7 @@ class MC_TitleStateHook extends Module {
         });
     }
     
+    // 0.7.5 thing
     public override function onStateCreate(event:ScriptEvent):Void {
         isTransitioning = false;
     }
@@ -25,7 +26,6 @@ class MC_TitleStateHook extends Module {
     public override function onStateChangeBegin(event:StateChangeScriptEvent):Void {
         if (isTransitioning || FlxG.sound.music == null)
             return;
-
         // So basically the idea here is that TitleState only transitions into the MainMenu.
         // Which means we can theoretically "hook" into it by overriding this method and canceling the change.
         // Thus, we can have a custom menu and change into other custom menus!
@@ -39,6 +39,12 @@ class MC_TitleStateHook extends Module {
             var menuSwitch:MenuSwitch = new MenuSwitch();
             FlxG.switchState(() -> menuSwitch);
         });
+    }
+
+    public override function onStateChangeEnd(event:StateChangeScriptEvent):Void {
+        @:privateAccess
+        if (event.targetState.swagShader != null && isTransitioning) // we're in title state
+            isTransitioning = false; // pre 0.7.5 fix
     }
 
 }

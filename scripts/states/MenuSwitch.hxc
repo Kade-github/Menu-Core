@@ -37,15 +37,17 @@ class MenuSwitch extends MusicBeatState {
     // Version descriptions are the top right text
     public var versionDescriptions:Array<String> = [];
     public var versions:Array<String> = new Array();
+    public var states:Array<FlxState> = new Array();
 
     public function addVersion(name:String, imageKey:String, description:String, state:FlxState):Void {
         trace("MenuSwitch: Adding version " + name + " with image key " + imageKey + " and description " + description);
         versions.push(name);
+        states.push(state);
         var sprite:FlxSprite = new FlxSprite().loadGraphic(Paths.image(imageKey, "shared"));
         sprite.scale.set(0.8, 0.8);
         versionImages.push(sprite);
 
-        atlasTexts.push(new AtlasText(0,0,name,32));
+        atlasTexts.push(new AtlasText(0,0,name, "bold"));
         versionDescriptions.push(description);
     }
 
@@ -107,7 +109,10 @@ class MenuSwitch extends MusicBeatState {
             var versionText = atlasTexts[i];
 
             versionImage.y = (FlxG.height / 2 - versionImage.height / 2) + 20;
-            versionText.y = versionImage.y + versionImage.height + 10;
+            versionText.y = versionImage.y + versionImage.height - 25;
+
+            versionImage.x = (FlxG.width / 2 - versionImage.width / 2) + (i - visualSelect) * versionImage.width * 1.2;
+            versionText.x = versionImage.x + (versionImage.width / 2 - versionText.width / 2);
 
             add(versionImage);
             add(versionText);
@@ -139,10 +144,20 @@ class MenuSwitch extends MusicBeatState {
     public override function update(elapsed:Float):Void {
         super.update(elapsed);
 
+        // TODO: Eventually do mobile hitboxes... (sorry mobile fam)
+
         // Escape key, goes back to TitleState
         if (FlxG.keys.justPressed.ESCAPE) {
             trace("MenuSwitch: ESCAPE pressed, going back to TitleState");
             FlxG.switchState(() -> new TitleState());
+        }
+
+        if (FlxG.keys.justPressed.ENTER) {
+            // TODO: Make this an animation or something
+            //FunkinSound.playOnce(Paths.sound("confirmMenu"), 0.5);
+            var toState = states[selected];
+            trace("MenuSwitch: ENTER pressed, switching to " + toState);
+            FlxG.switchState(() -> toState);
         }
 
         if (FlxG.keys.justPressed.LEFT) {
@@ -169,13 +184,18 @@ class MenuSwitch extends MusicBeatState {
 
         for (i in 0...versionImages.length) {
             var versionImage = versionImages[i];
+            var versionText = atlasTexts[i];
 
             // Start at half opacity, then go to full opacity when selected
             // Also start at 0.9 scale, and go to 1.0 scale when selected
             var targetAlpha = (i == Std.int(Math.round(visualSelect))) ? 1.0 : 0.5;
             var targetScale = (i == Std.int(Math.round(visualSelect))) ? 0.9 : 0.7;
 
+            versionText.alpha = versionImage.alpha;
+            versionText.scale.set(versionImage.scale.x, versionImage.scale.y);
+
             versionImage.x = (FlxG.width / 2 - versionImage.width / 2) + (i - visualSelect) * versionImage.width * 1.2;
+            versionText.x = versionImage.x + (versionImage.width / 2 - versionText.width / 2);
 
             versionImage.alpha += (targetAlpha - versionImage.alpha) * 0.2 * 60 * elapsed;
             versionImage.scale.set(versionImage.scale.x + (targetScale - versionImage.scale.x) * 0.2 * 60 * elapsed, versionImage.scale.y + (targetScale - versionImage.scale.y) * 0.2 * 60 * elapsed);
