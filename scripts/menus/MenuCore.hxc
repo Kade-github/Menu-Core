@@ -9,6 +9,8 @@ import funkin.ui.mainmenu.MainMenuState;
 import funkin.modding.module.Module;
 import flixel.FlxState;
 
+import funkin.modding.module.ModuleHandler;
+
 class MenuCore extends Module {
     var modName = "Funkin";
     var modDescription = "Friday Night Funkin'";
@@ -21,20 +23,15 @@ class MenuCore extends Module {
         super("MenuCore", 2);
     }
     
-    public function isMenuSwitch(state:FlxState):Bool {
-        if (state == null || state.rightWatermarkText == null)
-            return false;
+    public override function onCreate(event):Void {
+        super.onCreate(event);
         
-        if (state.rightWatermarkText.text != "menuSwitch")
-            return false;
-        return true;
-    }
-
-    public override function onStateChangeEnd(event:StateChangeScriptEvent):Void {
-        if (!isMenuSwitch(event.targetState))
+        var mcHandle = ModuleHandler.getModule("MC_TitleStateHook");
+        if (mcHandle == null) {
+            trace("MenuCore: MC_TitleStateHook not found!");
             return;
-
-        event.targetState.addVersion(modName, modAssetKey, modDescription, modState);
-        event.targetState.populateVersions();
+        }
+        
+        mcHandle.addVersion(modName, modAssetKey, modDescription, modState);
     }
 }

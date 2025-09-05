@@ -20,6 +20,8 @@ import kade.hex.states.HexMainMenu;
 import funkin.modding.module.Module;
 import flixel.FlxState;
 
+import funkin.modding.module.ModuleHandler;
+
 class HMenuCore extends Module {
     var modName = "VS Hex";
     var modDescription = "V.S Hex v3";
@@ -29,24 +31,19 @@ class HMenuCore extends Module {
 
     public function new() {
         // Priority is set to 3 here.
-        super("HMenuCore", 3);
+        super("MenuCore", 3);
     }
     
-    public function isMenuSwitch(state:FlxState):Bool {
-        if (state == null || state.rightWatermarkText == null)
-            return false;
+    public override function onCreate(event):Void {
+        super.onCreate(event);
         
-        if (state.rightWatermarkText.text != "menuSwitch")
-            return false;
-        return true;
-    }
-
-    public override function onStateChangeEnd(event:StateChangeScriptEvent):Void {
-        if (!isMenuSwitch(event.targetState))
+        var mcHandle = ModuleHandler.getModule("MC_TitleStateHook");
+        if (mcHandle == null) {
+            trace("MenuCore: MC_TitleStateHook not found!");
             return;
-
-        event.targetState.addVersion(modName, modAssetKey, modDescription, modState);
-        event.targetState.populateVersions();
+        }
+        
+        mcHandle.addVersion(modName, modAssetKey, modDescription, modState);
     }
 }
 ```

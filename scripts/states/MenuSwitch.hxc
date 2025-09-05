@@ -1,3 +1,8 @@
+/**
+ * MenuCore Menu Switch State
+ * A state for switching between different menu versions.
+ */
+
 package kade.menucore.states;
 
 import funkin.ui.title.TitleState;
@@ -14,9 +19,14 @@ import Array;
 import Math;
 import Std;
 
+import funkin.modding.module.ModuleHandler;
+
 import funkin.ui.AtlasText;
 
 class MenuSwitch extends MusicBeatState {
+
+
+    var mcHandle = null;
 
     var bg:FlxSprite;
     var choose:FlxText;
@@ -39,20 +49,21 @@ class MenuSwitch extends MusicBeatState {
     public var versions:Array<String> = new Array();
     public var states:Array<FlxState> = new Array();
 
-    public function addVersion(name:String, imageKey:String, description:String, state:FlxState):Void {
-        trace("MenuSwitch: Adding version " + name + " with image key " + imageKey + " and description " + description);
-        versions.push(name);
-        states.push(state);
-        var sprite:FlxSprite = new FlxSprite().loadGraphic(Paths.image(imageKey, "shared"));
-        sprite.scale.set(0.8, 0.8);
-        versionImages.push(sprite);
-
-        atlasTexts.push(new AtlasText(0,0,name, "bold"));
-        versionDescriptions.push(description);
-    }
-
     public function new():Void {
         super();
+
+        mcHandle = ModuleHandler.getModule("MC_TitleStateHook");
+
+        if (mcHandle == null) {
+            trace("MenuSwitch: MC_TitleStateHook not found!");
+            return;
+        }
+
+        versions = mcHandle.versions;
+        states = mcHandle.states;
+        versionImages = mcHandle.versionImages;
+        atlasTexts = mcHandle.atlasTexts;
+        versionDescriptions = mcHandle.versionDescriptions;
 
         bg = new FlxSprite(-320, -115);
         bg.loadGraphic(Paths.image("mc_bg","shared"));
@@ -86,6 +97,8 @@ class MenuSwitch extends MusicBeatState {
         add(rightSelect);
 
         trace("MenuSwitch: new");
+
+        populateVersions();
 
     }
 
@@ -152,7 +165,7 @@ class MenuSwitch extends MusicBeatState {
         // Escape key, goes back to TitleState
         if (FlxG.keys.justPressed.ESCAPE) {
             trace("MenuSwitch: ESCAPE pressed, going back to TitleState");
-            FlxG.switchState(() -> new TitleState());
+            FlxG.switchState(new TitleState());
         }
 
         if (FlxG.keys.justPressed.ENTER) {
@@ -160,7 +173,7 @@ class MenuSwitch extends MusicBeatState {
             //FunkinSound.playOnce(Paths.sound("confirmMenu"), 0.5);
             var toState = states[selected];
             trace("MenuSwitch: ENTER pressed, switching to " + toState);
-            FlxG.switchState(() -> toState);
+            FlxG.switchState(toState);
         }
 
         if (FlxG.keys.justPressed.LEFT) {
