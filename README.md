@@ -33,7 +33,10 @@ class HMenuCore extends Module {
     }
     
     public function isMenuSwitch(state:FlxState):Bool {
-        if (state.versions == null)
+        if (state == null || state.rightWatermarkText == null)
+            return false;
+        
+        if (state.rightWatermarkText.text != "menuSwitch")
             return false;
         return true;
     }

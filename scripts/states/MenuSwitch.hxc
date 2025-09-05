@@ -139,6 +139,9 @@ class MenuSwitch extends MusicBeatState {
         FlxG.sound.music.fadeIn(3);
 
         trace("MenuSwitch: create");
+
+        rightWatermarkText.text = "menuSwitch";
+        rightWatermarkText.visible = false;
     }
 
     public override function update(elapsed:Float):Void {
