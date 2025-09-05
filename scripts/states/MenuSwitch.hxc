@@ -24,8 +24,6 @@ import funkin.modding.module.ModuleHandler;
 import funkin.ui.AtlasText;
 
 class MenuSwitch extends MusicBeatState {
-
-
     var mcHandle = null;
 
     var bg:FlxSprite;
@@ -52,10 +50,10 @@ class MenuSwitch extends MusicBeatState {
     public function new():Void {
         super();
 
-        mcHandle = ModuleHandler.getModule("MC_TitleStateHook");
+        mcHandle = ModuleHandler.getModule("MC_Data");
 
         if (mcHandle == null) {
-            trace("MenuSwitch: MC_TitleStateHook not found!");
+            trace("MenuSwitch: MC_Data not found!");
             return;
         }
 
@@ -95,11 +93,6 @@ class MenuSwitch extends MusicBeatState {
         rightSelect.y = FlxG.height / 2 - rightSelect.height / 2;
         rightSelect.flipX = true;
         add(rightSelect);
-
-        trace("MenuSwitch: new");
-
-        populateVersions();
-
     }
 
     var addedimages:Array<FlxSprite> = [];
@@ -141,6 +134,17 @@ class MenuSwitch extends MusicBeatState {
     public override function create():Void {
         super.create();
 
+        var titleHandle = ModuleHandler.getModule("MC_TitleStateHook");
+
+        if (titleHandle == null) {
+            trace("MenuSwitch: MC_TitleStateHook not found!");
+            return;
+        }
+
+        titleHandle.isTransitioning = false;
+
+        populateVersions();
+
         FunkinSound.playMusic("menu-switch",
         {
             startingVolume: 0,
@@ -150,8 +154,6 @@ class MenuSwitch extends MusicBeatState {
         });
 
         FlxG.sound.music.fadeIn(3);
-
-        trace("MenuSwitch: create");
 
         rightWatermarkText.text = "menuSwitch";
         rightWatermarkText.visible = false;
@@ -165,7 +167,8 @@ class MenuSwitch extends MusicBeatState {
         // Escape key, goes back to TitleState
         if (FlxG.keys.justPressed.ESCAPE) {
             trace("MenuSwitch: ESCAPE pressed, going back to TitleState");
-            FlxG.switchState(new TitleState());
+            var titleState = new TitleState();
+            FlxG.switchState(titleState);
         }
 
         if (FlxG.keys.justPressed.ENTER) {

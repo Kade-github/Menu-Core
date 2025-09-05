@@ -6,6 +6,7 @@ package kade.menucore;
 
 import kade.menucore.states.MenuSwitch;
 
+import funkin.modding.module.ModuleHandler;
 import funkin.modding.module.Module;
 import funkin.ui.title.TitleState;
 import funkin.audio.FunkinSound;
@@ -17,38 +18,13 @@ import flixel.FlxState;
 import flixel.FlxG;
 
 class MC_TitleStateHook extends Module {
-    public static var isTransitioning:Bool = false;
-
-    public var versionImages:Array<FlxSprite> = [];
-    // Atlas texts are below the images
-    public var atlasTexts:Array<AtlasText> = [];
-    // Version descriptions are the top right text
-    public var versionDescriptions:Array<String> = [];
-    public var versions:Array<String> = new Array();
-    public var states:Array<FlxState> = new Array();
-
-    public function addVersion(name:String, imageKey:String, description:String, state:FlxState):Void {
-        trace("MenuSwitch: Adding version " + name + " with image key " + imageKey + " and description " + description);
-        versions.push(name);
-        states.push(state);
-        var sprite:FlxSprite = new FlxSprite().loadGraphic(Paths.image(imageKey, "shared"));
-        sprite.scale.set(0.8, 0.8);
-        versionImages.push(sprite);
-
-        atlasTexts.push(new AtlasText(0,0,name, "bold"));
-        versionDescriptions.push(description);
-    }
+    public var isTransitioning:Bool = false;
+    public var once:Bool = true;
 
     public function new():Void {
         super("MC_TitleStateHook", 1, {
             state: TitleState
         });
-    }
-    
-    // 0.7.5 thing
-    public override function onStateCreate(event:ScriptEvent):Void {
-        super.onStateCreate(event);
-        isTransitioning = false;
     }
 
     public override function onStateChangeBegin(event:StateChangeScriptEvent):Void {
@@ -56,6 +32,18 @@ class MC_TitleStateHook extends Module {
 
         if (isTransitioning || FlxG.sound.music == null)
             return;
+
+        if (!once) 
+        {
+            var mcHandle = ModuleHandler.getModule("MC_Data");
+            if (mcHandle != null) {
+                mcHandle.dump();
+            }
+            once = true;
+        }
+        else
+            once = false;
+        
         // So basically the idea here is that TitleState only transitions into the MainMenu.
         // Which means we can theoretically "hook" into it by overriding this method and canceling the change.
         // Thus, we can have a custom menu and change into other custom menus!
@@ -64,18 +52,7 @@ class MC_TitleStateHook extends Module {
 
         isTransitioning = true;
 
-        FlxG.sound.music.fadeOut(0.35,0,() -> {
-            // After fading out, switch to MenuSwitch state
-            FlxG.switchState(() -> new MenuSwitch());
-        });
-    }
-
-    public override function onStateChangeEnd(event:StateChangeScriptEvent):Void {
-        super.onStateChangeEnd(event);
-
-        @:privateAccess
-        if (event.targetState.swagShader != null && isTransitioning) // we're in title state
-            isTransitioning = false; // pre 0.7.5 fix
+        FlxG.switchState(new MenuSwitch());
     }
 
 }

@@ -1,0 +1,57 @@
+/**
+ * MenuCore module for managing core data.
+ */
+
+package kade.menucore;
+
+import funkin.modding.module.Module;
+import funkin.ui.AtlasText;
+
+import flixel.FlxSprite;
+import flixel.FlxState;
+
+class MC_Data extends Module {
+    public var versionImages:Array<FlxSprite> = [];
+    // Atlas texts are below the images
+    public var atlasTexts:Array<AtlasText> = [];
+    // Version descriptions are the top right text
+    public var versionDescriptions:Array<String> = [];
+    public var versions:Array<String> = new Array();
+    public var states:Array<FlxState> = new Array();
+
+    public function dump():Void {
+        versions = [];
+        states = [];
+        versionImages = [];
+        atlasTexts = [];
+        versionDescriptions = [];
+        trace("MC_Data: Dumped all versions");
+    }
+
+    public function addVersion(name:String, imageKey:String, description:String, state:FlxState):Void {
+        trace("MC_Data: Adding version " + name + " with image key " + imageKey + " and description " + description);
+        versions.push(name);
+        states.push(state);
+        var sprite:FlxSprite = new FlxSprite().loadGraphic(Paths.image(imageKey, "shared"));
+        sprite.scale.set(0.8, 0.8);
+        versionImages.push(sprite);
+
+        atlasTexts.push(new AtlasText(0,0,name, "bold"));
+        versionDescriptions.push(description);
+    }
+    
+    public override function onCreate(event):Void {
+        super.onCreate(event);
+
+        versionImages = [];
+        atlasTexts = [];
+        versionDescriptions = [];
+        versions = new Array();
+        states = new Array();
+    }
+
+    public function new():Void {
+        super("MC_Data", 1);
+    }
+
+}

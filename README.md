@@ -34,16 +34,32 @@ class HMenuCore extends Module {
         super("HMenuCore", 3);
     }
     
-    public override function onCreate(event):Void {
-        super.onCreate(event);
-        
-        var mcHandle = ModuleHandler.getModule("MC_TitleStateHook");
+    public function addVersion()
+    {
+        var mcHandle = ModuleHandler.getModule("MC_Data");
         if (mcHandle == null) {
-            trace("MenuCore: MC_TitleStateHook not found!");
+            trace("MenuCore: MC_Data not found!");
+            return;
+        }
+
+        if (mcHandle.versions.indexOf(modName) != -1) {
+            // Already added
             return;
         }
         
         mcHandle.addVersion(modName, modAssetKey, modDescription, modState);
+    }
+
+    public override function onStateChangeBegin(event:StateChangeScriptEvent):Void {
+        super.onStateChangeBegin(event);
+
+        addVersion();
+    }
+
+    public override function onCreate(event):Void {
+        super.onCreate(event);
+
+        addVersion();
     }
 }
 ```
