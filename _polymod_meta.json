@@ -1,0 +1,15 @@
+{
+    "title": "Menu Core",
+    "description": "A helper mod to add menu-switching functionality.",
+    "contributors": [
+      {
+        "name": "Kade"
+      },
+      {
+        "name": "YingYang"
+      }
+    ],
+    "api_version": "0.7.0",
+    "mod_version": "1.0.0",
+    "license": "Apache-2.0"
+  }

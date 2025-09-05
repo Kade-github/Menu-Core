@@ -1,0 +1,44 @@
+package kade.menucore;
+
+import kade.menucore.states.MenuSwitch;
+
+import funkin.modding.module.Module;
+import funkin.ui.title.TitleState;
+import funkin.audio.FunkinSound;
+import funkin.ui.mainmenu.MainMenuState;
+
+import flixel.FlxG;
+
+class MC_TitleStateHook extends Module {
+    public static var isTransitioning:Bool = false;
+
+    public function new():Void {
+        super("MC_TitleStateHook", 1, {
+            state: TitleState
+        });
+    }
+    
+    public override function onStateCreate(event:ScriptEvent):Void {
+        isTransitioning = false;
+    }
+
+    public override function onStateChangeBegin(event:StateChangeScriptEvent):Void {
+        if (isTransitioning || FlxG.sound.music == null)
+            return;
+
+        // So basically the idea here is that TitleState only transitions into the MainMenu.
+        // Which means we can theoretically "hook" into it by overriding this method and canceling the change.
+        // Thus, we can have a custom menu and change into other custom menus!
+
+        event.eventCanceled = true;
+
+        isTransitioning = true;
+
+        FlxG.sound.music.fadeOut(0.35,0,() -> {
+            // After fading out, switch to MenuSwitch state
+            var menuSwitch:MenuSwitch = new MenuSwitch();
+            FlxG.switchState(() -> menuSwitch);
+        });
+    }
+
+}

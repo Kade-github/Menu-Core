@@ -1,0 +1,24 @@
+package kade.menucore;
+
+import funkin.modding.module.Module;
+import flixel.FlxState;
+
+class MenuCore extends Module {
+    public function new() {
+        super("MenuCore", 3);
+    }
+    
+    public function isMenuSwitch(state:FlxState):Bool {
+        if (state.versions == null) // wtf???
+            return false;
+        return true;
+    }
+
+    public override function onStateChangeEnd(event:StateChangeScriptEvent):Void {
+        if (!isMenuSwitch(event.targetState))
+            return;
+
+        event.targetState.addVersion("Funkin", "mc_base", "Friday Night Funkin'", new funkin.ui.mainmenu.MainMenuState());
+        event.targetState.populateVersions();
+    }
+}

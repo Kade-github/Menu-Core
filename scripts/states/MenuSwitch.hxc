@@ -1,0 +1,184 @@
+package kade.menucore.states;
+
+import funkin.ui.title.TitleState;
+import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.MusicBeatState;
+import funkin.audio.FunkinSound;
+import flixel.FlxG;
+import flixel.text.FlxText;
+import flixel.FlxSprite;
+import funkin.graphics.FunkinSprite;
+import funkin.Paths;
+import flixel.FlxState;
+import Array;
+import Math;
+import Std;
+
+import funkin.ui.AtlasText;
+
+class MenuSwitch extends MusicBeatState {
+
+    var bg:FlxSprite;
+    var choose:FlxText;
+
+    var topRightText:FlxText;
+
+    var blackBar:FlxSprite;
+
+    var leftSelect:FunkinSprite;
+    var rightSelect:FunkinSprite;
+    
+    var selected:Int = 0;
+    var visualSelect:Float = 0;
+
+    public var versionImages:Array<FlxSprite> = [];
+    // Atlas texts are below the images
+    public var atlasTexts:Array<AtlasText> = [];
+    // Version descriptions are the top right text
+    public var versionDescriptions:Array<String> = [];
+    public var versions:Array<String> = new Array();
+
+    public function addVersion(name:String, imageKey:String, description:String, state:FlxState):Void {
+        trace("MenuSwitch: Adding version " + name + " with image key " + imageKey + " and description " + description);
+        versions.push(name);
+        var sprite:FlxSprite = new FlxSprite().loadGraphic(Paths.image(imageKey, "shared"));
+        sprite.scale.set(0.8, 0.8);
+        versionImages.push(sprite);
+
+        atlasTexts.push(new AtlasText(0,0,name,32));
+        versionDescriptions.push(description);
+    }
+
+    public function new():Void {
+        super();
+
+        bg = new FlxSprite(-320, -115);
+        bg.loadGraphic(Paths.image("mc_bg","shared"));
+        bg.setGraphicSize(FlxG.width, FlxG.height);
+        add(bg);
+
+        choose = new FlxText(6, 2, FlxG.width, "CHOOSE THE VERSION");
+        choose.setFormat(Paths.font("vcr.ttf"), 55, 0xFFFFFFFF);
+        add(choose);
+
+        topRightText = new FlxText(0, 15, FlxG.width / 2, "");
+        topRightText.setFormat(Paths.font("vcr.ttf"), 35, 0xFFFFFFFF, "right");
+        topRightText.x = FlxG.width - topRightText.width - 10;
+        add(topRightText);
+
+        // Middle black bar of bg
+        blackBar = new FlxSprite(0, 0);
+        blackBar.makeGraphic(FlxG.width, 185, 0xFF000000);
+        blackBar.y = FlxG.height / 2 - blackBar.height / 2;
+        add(blackBar);
+
+        leftSelect = FunkinSprite.createSparrow(0,0,"freeplay/freeplaySelector/freeplaySelector");
+        leftSelect.x = FlxG.width / 8 - leftSelect.width / 2;
+        leftSelect.y = FlxG.height / 2 - leftSelect.height / 2;
+        add(leftSelect);
+
+        rightSelect = FunkinSprite.createSparrow(0,0,"freeplay/freeplaySelector/freeplaySelector");
+        rightSelect.x = FlxG.width - FlxG.width / 8 - rightSelect.width / 2;
+        rightSelect.y = FlxG.height / 2 - rightSelect.height / 2;
+        rightSelect.flipX = true;
+        add(rightSelect);
+
+        trace("MenuSwitch: new");
+
+    }
+
+    var addedimages:Array<FlxSprite> = [];
+    var addedtexts:Array<AtlasText> = [];
+
+    public function populateVersions():Void {
+        // Remove all version images first
+
+        for (image in addedimages) {
+            remove(image);
+        }
+
+        for (text in addedtexts) {
+            remove(text);
+        }
+        
+        for (i in 0...versions.length) {
+            var versionName = versions[i];
+            var versionImage = versionImages[i];
+            var versionText = atlasTexts[i];
+
+            versionImage.y = (FlxG.height / 2 - versionImage.height / 2) + 20;
+            versionText.y = versionImage.y + versionImage.height + 10;
+
+            add(versionImage);
+            add(versionText);
+
+            addedimages.push(versionImage);
+            addedtexts.push(versionText);
+        }
+
+        topRightText.text = versionDescriptions[selected];
+        topRightText.x = FlxG.width - topRightText.width - 10;
+    }
+
+    public override function create():Void {
+        super.create();
+
+        FunkinSound.playMusic("menu-switch",
+        {
+            startingVolume: 0,
+            overrideExisting: true,
+            restartTrack: true,
+            loop: true,
+        });
+
+        FlxG.sound.music.fadeIn(3);
+
+        trace("MenuSwitch: create");
+    }
+
+    public override function update(elapsed:Float):Void {
+        super.update(elapsed);
+
+        // Escape key, goes back to TitleState
+        if (FlxG.keys.justPressed.ESCAPE) {
+            trace("MenuSwitch: ESCAPE pressed, going back to TitleState");
+            FlxG.switchState(() -> new TitleState());
+        }
+
+        if (FlxG.keys.justPressed.LEFT) {
+            selected--;
+            if (selected < 0)
+                selected = versions.length - 1;
+            FunkinSound.playOnce(Paths.sound("scrollMenu"), 0.5);
+
+            topRightText.text = versionDescriptions[selected];
+        }
+
+        if (FlxG.keys.justPressed.RIGHT) {
+            selected++;
+            if (selected >= versions.length)
+                selected = 0;
+            FunkinSound.playOnce(Paths.sound("scrollMenu"), 0.5);
+
+            topRightText.text = versionDescriptions[selected];
+            topRightText.x = FlxG.width - topRightText.width - 10;
+        }
+
+
+        visualSelect += (selected - visualSelect) * 0.2;
+
+        for (i in 0...versionImages.length) {
+            var versionImage = versionImages[i];
+
+            // Start at half opacity, then go to full opacity when selected
+            // Also start at 0.9 scale, and go to 1.0 scale when selected
+            var targetAlpha = (i == Std.int(Math.round(visualSelect))) ? 1.0 : 0.5;
+            var targetScale = (i == Std.int(Math.round(visualSelect))) ? 0.9 : 0.7;
+
+            versionImage.x = (FlxG.width / 2 - versionImage.width / 2) + (i - visualSelect) * versionImage.width * 1.2;
+
+            versionImage.alpha += (targetAlpha - versionImage.alpha) * 0.2 * 60 * elapsed;
+            versionImage.scale.set(versionImage.scale.x + (targetScale - versionImage.scale.x) * 0.2 * 60 * elapsed, versionImage.scale.y + (targetScale - versionImage.scale.y) * 0.2 * 60 * elapsed);
+        }
+    }
+}
