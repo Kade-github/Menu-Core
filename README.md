@@ -64,7 +64,7 @@ class HMenuCore extends Module {
 }
 ```
 
-You will create a module like so, name it whatever. Make sure it's `priority` is after **2**! After that, copy the two other non-constructor functions and change the top properties to what you'd like!
+You will create a module like so, name it whatever. Make sure it's `priority` is after **2**! After that, copy the three other non-constructor functions and change the top properties to what you'd like!
 
 ```haxe
 var modName = "VS Hex";
