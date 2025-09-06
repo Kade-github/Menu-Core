@@ -16,7 +16,7 @@ class MenuCore extends Module {
     var modDescription = "Friday Night Funkin'";
     var modAssetKey = "mc_base";
 
-    var modState = new MainMenuState();
+    var modState = null;
 
     public function new() {
         // Priority is set to 2 here.
@@ -36,6 +36,8 @@ class MenuCore extends Module {
             return;
         }
         
+        modState = new MainMenuState();
+
         mcHandle.addVersion(modName, modAssetKey, modDescription, modState);
     }
 

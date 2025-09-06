@@ -27,7 +27,7 @@ class HMenuCore extends Module {
     var modDescription = "V.S Hex v3";
     var modAssetKey = "mc_hex";
 
-    var modState = new HexMainMenu();
+    var modState = null;
 
     public function new() {
         // Priority is set to 3 here.
@@ -46,6 +46,8 @@ class HMenuCore extends Module {
             // Already added
             return;
         }
+
+        modState = new HexMainMenu();
         
         mcHandle.addVersion(modName, modAssetKey, modDescription, modState);
     }
@@ -72,9 +74,9 @@ var modDescription = "V.S Hex v3";
 var modAssetKey = "mc_hex";
 ```
 
-Then at the bottom you'll see 
+Then at the bottom (in the `addVersion` method) you'll see 
 ```haxe
-var modState = new HexMainMenu();
+modState = new HexMainMenu();
 ```
 
 It's very important that you create a new custom state, like so:
