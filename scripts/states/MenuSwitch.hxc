@@ -7,6 +7,9 @@ package kade.menucore.states;
 
 import funkin.ui.title.TitleState;
 import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.FullScreenScaleMode;
+import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
 import funkin.ui.MusicBeatState;
 import funkin.audio.FunkinSound;
 import flixel.FlxG;
@@ -27,6 +30,7 @@ class MenuSwitch extends MusicBeatState {
     var mcHandle = null;
 
     var bg:FlxSprite;
+    var chooseBlackBar:FlxText;
     var choose:FlxText;
 
     var topRightText:FlxText;
@@ -47,6 +51,8 @@ class MenuSwitch extends MusicBeatState {
     public var versions:Array<String> = new Array();
     public var states:Array<FlxState> = new Array();
 
+    var backMobile:Bool = false;
+
     public function new():Void {
         super();
 
@@ -63,35 +69,52 @@ class MenuSwitch extends MusicBeatState {
         atlasTexts = mcHandle.atlasTexts;
         versionDescriptions = mcHandle.versionDescriptions;
 
-        bg = new FlxSprite(-320, -115);
+        bg = new FlxSprite();
         bg.loadGraphic(Paths.image("mc_bg","shared"));
-        bg.setGraphicSize(FlxG.width, FlxG.height);
+        bg.setGraphicSize(Std.int(FlxG.width * 1.2));
+        bg.updateHitbox();
+        bg.screenCenter();
+        bg.zIndex = 0;
         add(bg);
 
-        choose = new FlxText(6, 2, FlxG.width, "CHOOSE THE VERSION");
+        chooseBlackBar = new FlxSprite(0, 0);
+        chooseBlackBar.makeGraphic(FlxG.width, 60, 0xFF000000);
+        chooseBlackBar.zIndex = 10;
+        add(chooseBlackBar);
+
+        choose = new FlxText(Math.max(FullScreenScaleMode.gameNotchSize.x, 6), 2, FlxG.width, "CHOOSE THE VERSION");
         choose.setFormat(Paths.font("vcr.ttf"), 55, 0xFFFFFFFF);
+        choose.zIndex = 20;
         add(choose);
 
         topRightText = new FlxText(0, 15, FlxG.width / 2, "");
         topRightText.setFormat(Paths.font("vcr.ttf"), 35, 0xFFFFFFFF, "right");
-        topRightText.x = FlxG.width - topRightText.width - 10;
+        topRightText.x = (FlxG.width - topRightText.width - Math.max(FullScreenScaleMode.gameNotchSize.x, 10));
+        topRightText.zIndex = 30;
         add(topRightText);
 
         // Middle black bar of bg
         blackBar = new FlxSprite(0, 0);
         blackBar.makeGraphic(FlxG.width, 185, 0xFF000000);
         blackBar.y = FlxG.height / 2 - blackBar.height / 2;
+        blackBar.zIndex = 40;
         add(blackBar);
 
         leftSelect = FunkinSprite.createSparrow(0,0,"freeplay/freeplaySelector/freeplaySelector");
+        leftSelect.animation.addByPrefix('shine', 'arrow pointer loop', 24);
+        leftSelect.animation.play("shine", true);
         leftSelect.x = FlxG.width / 8 - leftSelect.width / 2;
         leftSelect.y = FlxG.height / 2 - leftSelect.height / 2;
+        leftSelect.zIndex = 70;
         add(leftSelect);
 
         rightSelect = FunkinSprite.createSparrow(0,0,"freeplay/freeplaySelector/freeplaySelector");
+        rightSelect.animation.addByPrefix('shine', 'arrow pointer loop', 24);
+        rightSelect.animation.play("shine", true);
         rightSelect.x = FlxG.width - FlxG.width / 8 - rightSelect.width / 2;
         rightSelect.y = FlxG.height / 2 - rightSelect.height / 2;
         rightSelect.flipX = true;
+        rightSelect.zIndex = 80;
         add(rightSelect);
     }
 
@@ -120,6 +143,9 @@ class MenuSwitch extends MusicBeatState {
             versionImage.x = (FlxG.width / 2 - versionImage.width / 2) + (i - visualSelect) * versionImage.width * 1.2;
             versionText.x = versionImage.x + (versionImage.width / 2 - versionText.width / 2);
 
+            versionImage.zIndex = 50;
+            versionText.zIndex = 60;
+
             add(versionImage);
             add(versionText);
 
@@ -128,7 +154,7 @@ class MenuSwitch extends MusicBeatState {
         }
 
         topRightText.text = versionDescriptions[selected];
-        topRightText.x = FlxG.width - topRightText.width - 10;
+        topRightText.x = (FlxG.width - topRightText.width - Math.max(FullScreenScaleMode.gameNotchSize.x, 10));
     }
 
     public override function create():Void {
@@ -144,6 +170,14 @@ class MenuSwitch extends MusicBeatState {
         titleHandle.isTransitioning = false;
 
         populateVersions();
+
+        if (FlxG.onMobile) {
+            addBackButton(FlxG.width - 230, FlxG.height - 200, 0xFFFFFFFF, () -> {
+                backMobile = true;
+            }, 0.3);
+        }
+
+        refresh();
 
         FunkinSound.playMusic("menu-switch",
         {
@@ -162,42 +196,50 @@ class MenuSwitch extends MusicBeatState {
     public override function update(elapsed:Float):Void {
         super.update(elapsed);
 
-        // TODO: Eventually do mobile hitboxes... (sorry mobile fam)
+        var back:Bool = controls.BACK || backMobile;
+        var accept:Bool = controls.ACCEPT;
+        var left:Bool = controls.UI_LEFT_P;
+        var right:Bool = controls.UI_RIGHT_P;
 
-        // Escape key, goes back to TitleState
-        if (FlxG.keys.justPressed.ESCAPE) {
+        if (FlxG.onMobile) {
+            if (TouchUtil.pressAction(versionImages[selected]))
+                accept = true;
+
+            if (TouchUtil.pressAction(leftSelect) || SwipeUtil.justSwipedLeft)
+                left = true;
+
+            if (TouchUtil.pressAction(rightSelect) || SwipeUtil.justSwipedRight)
+                right = true;
+        }
+
+        if (left || right) {
+            if (left)
+                selected--;
+            else
+                selected++;
+
+            if (selected < 0)
+                selected = versions.length - 1;
+            else if (selected >= versions.length)
+                selected = 0;
+
+            FunkinSound.playOnce(Paths.sound("scrollMenu"), 0.5);
+
+            topRightText.text = versionDescriptions[selected];
+            topRightText.x = (FlxG.width - topRightText.width - Math.max(FullScreenScaleMode.gameNotchSize.x, 10));
+        }
+        else if (back) {
             trace("MenuSwitch: ESCAPE pressed, going back to TitleState");
             var titleState = new TitleState();
             FlxG.switchState(titleState);
         }
-
-        if (FlxG.keys.justPressed.ENTER) {
+        else if (accept) {
             // TODO: Make this an animation or something
             //FunkinSound.playOnce(Paths.sound("confirmMenu"), 0.5);
             var toState = states[selected];
             trace("MenuSwitch: ENTER pressed, switching to " + toState);
             FlxG.switchState(toState);
         }
-
-        if (FlxG.keys.justPressed.LEFT) {
-            selected--;
-            if (selected < 0)
-                selected = versions.length - 1;
-            FunkinSound.playOnce(Paths.sound("scrollMenu"), 0.5);
-
-            topRightText.text = versionDescriptions[selected];
-        }
-
-        if (FlxG.keys.justPressed.RIGHT) {
-            selected++;
-            if (selected >= versions.length)
-                selected = 0;
-            FunkinSound.playOnce(Paths.sound("scrollMenu"), 0.5);
-
-            topRightText.text = versionDescriptions[selected];
-            topRightText.x = FlxG.width - topRightText.width - 10;
-        }
-
 
         visualSelect += (selected - visualSelect) * 0.2;
 
