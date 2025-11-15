@@ -108,7 +108,6 @@ Then put it in your mods `shared/images/` folder, and you'll be done!
 
 ### Todo
 
-- Mobile Support
 - Animation for selection
 
 ### Credits
