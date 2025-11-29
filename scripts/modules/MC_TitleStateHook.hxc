@@ -33,16 +33,10 @@ class MC_TitleStateHook extends Module {
         if (isTransitioning || FlxG.sound.music == null)
             return;
 
-        if (!once) 
-        {
-            var mcHandle = ModuleHandler.getModule("MC_Data");
-            if (mcHandle != null) {
-                mcHandle.dump();
-            }
-            once = true;
+        var mcHandle = ModuleHandler.getModule("MC_Data");
+        if (mcHandle != null) {
+            mcHandle.dump();
         }
-        else
-            once = false;
         
         // So basically the idea here is that TitleState only transitions into the MainMenu.
         // Which means we can theoretically "hook" into it by overriding this method and canceling the change.

@@ -11,7 +11,7 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 
 class MC_Data extends Module {
-    public var versionImages:Array<FlxSprite> = [];
+    public var versionImages:Array<String> = [];
     // Atlas texts are below the images
     public var atlasTexts:Array<AtlasText> = [];
     // Version descriptions are the top right text
@@ -32,10 +32,7 @@ class MC_Data extends Module {
         trace("MC_Data: Adding version " + name + " with image key " + imageKey + " and description " + description);
         versions.push(name);
         states.push(state);
-        var sprite:FlxSprite = new FlxSprite().loadGraphic(Paths.image(imageKey, "shared"));
-        sprite.scale.set(0.8, 0.8);
-        versionImages.push(sprite);
-
+        versionImages.push(imageKey);
         atlasTexts.push(new AtlasText(0,0,name, "bold"));
         versionDescriptions.push(description);
     }

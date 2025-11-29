@@ -65,7 +65,7 @@ class MenuSwitch extends MusicBeatState {
 
         versions = mcHandle.versions;
         states = mcHandle.states;
-        versionImages = mcHandle.versionImages;
+
         atlasTexts = mcHandle.atlasTexts;
         versionDescriptions = mcHandle.versionDescriptions;
 
@@ -132,6 +132,14 @@ class MenuSwitch extends MusicBeatState {
             remove(text);
         }
 
+        versionImages = new Array();
+
+        for (imageKey in mcHandle.versionImages) {
+            var sprite:FlxSprite = new FlxSprite().loadGraphic(Paths.image(imageKey, "shared"));
+            sprite.scale.set(0.8, 0.8);
+            versionImages.push(sprite);
+        }
+
         for (i in 0...versions.length) {
             var versionName = versions[i];
             var versionImage = versionImages[i];
@@ -177,8 +185,6 @@ class MenuSwitch extends MusicBeatState {
             }, 0.3);
         }
 
-        refresh();
-
         FunkinSound.playMusic("menu-switch",
         {
             startingVolume: 0,
@@ -189,8 +195,7 @@ class MenuSwitch extends MusicBeatState {
 
         FlxG.sound.music.fadeIn(3);
 
-        rightWatermarkText.text = "menuSwitch";
-        rightWatermarkText.visible = false;
+        trace("MenuSwitch: Created Menu Switch State");
     }
 
     public override function update(elapsed:Float):Void {
@@ -199,6 +204,7 @@ class MenuSwitch extends MusicBeatState {
         var back:Bool = controls.BACK || backMobile;
         var accept:Bool = controls.ACCEPT;
         var left:Bool = controls.UI_LEFT_P;
+
         var right:Bool = controls.UI_RIGHT_P;
 
         if (FlxG.onMobile) {
