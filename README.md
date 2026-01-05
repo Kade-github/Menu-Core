@@ -1,7 +1,7 @@
 # Menu Core
 > A FNF helper mod to enable multiple custom main menus and mod content switching.
 
-**Current Funkin' Version:** `0.7.5`
+**Current Funkin' Version:** `0.8.1`
 
 A Friday Night Funkin' mod to enable a custom menu at the start of the game. This menu will allow the user to switch between different mods and their own custom menus, to allow for custom mod content to be enabled/disabled, or grouped together.
 
