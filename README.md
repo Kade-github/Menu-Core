@@ -104,7 +104,7 @@ Then take that state and instantiate it in that variable.
 
 The next step is to take the `mc_template.png` asset and change it to your mod's own icon.
 
-Then put it in your mods `shared/images/` folder, and you'll be done!
+Then put it in your mods images folder (for MenuCore it's in `ui/menu-core/`)
 
 ### Todo
 

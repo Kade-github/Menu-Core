@@ -14,7 +14,7 @@ import funkin.modding.module.ModuleHandler;
 class MenuCore extends Module {
     var modName = "Funkin";
     var modDescription = "Friday Night Funkin'";
-    var modAssetKey = "mc_base";
+    var modAssetKey = "ui/menu-core/mc-base";
 
     var modState = null;
 
