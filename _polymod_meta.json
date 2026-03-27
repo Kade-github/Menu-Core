@@ -1,4 +1,5 @@
 {
+    "id": "menucore",
     "title": "Menu Core",
     "description": "A helper mod to add menu-switching functionality.",
     "contributors": [
