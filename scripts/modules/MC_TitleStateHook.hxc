@@ -4,20 +4,12 @@
 
 package kade.menucore;
 
-import kade.menucore.states.MenuSwitch;
-
 import funkin.modding.module.ModuleHandler;
 import funkin.modding.module.Module;
 import funkin.ui.title.TitleState;
-import funkin.audio.FunkinSound;
-import funkin.ui.mainmenu.MainMenuState;
-import funkin.ui.AtlasText;
-
-import flixel.FlxSprite;
-import flixel.FlxState;
-import flixel.FlxG;
 
 class MC_TitleStateHook extends Module {
+    public var shouldAllowMainMenu:Bool = false;
     public var isTransitioning:Bool = false;
     public var once:Bool = true;
 
@@ -27,26 +19,16 @@ class MC_TitleStateHook extends Module {
         });
     }
 
-    public override function onStateChangeBegin(event:StateChangeScriptEvent):Void {
-        super.onStateChangeBegin(event);
+    public override function onStateCreate(event):Void {
+        super.onStateCreate(event);
 
-        if (isTransitioning || FlxG.sound.music == null)
-            return;
-
-        var mcHandle = ModuleHandler.getModule("MC_Data");
-        if (mcHandle != null) {
-            mcHandle.dump();
+        var mainMenuStateHook = ModuleHandler.getModule("MC_MainMenuStateHook");
+        if (mainMenuStateHook != null) {
+            trace("MC_TitleStateHook: Resetting MainMenuStateHook variables");
+            mainMenuStateHook.shouldAllowMainMenu = false;
+            mainMenuStateHook.isTransitioning = false;
+            mainMenuStateHook.once = true;
         }
-        
-        // So basically the idea here is that TitleState only transitions into the MainMenu.
-        // Which means we can theoretically "hook" into it by overriding this method and canceling the change.
-        // Thus, we can have a custom menu and change into other custom menus!
-
-        event.eventCanceled = true;
-
-        isTransitioning = true;
-
-        FlxG.switchState(new MenuSwitch());
     }
 
 }

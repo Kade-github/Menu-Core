@@ -1,0 +1,53 @@
+/**
+ * MenuCore module for managing menu states and transitions.
+ */
+
+package kade.menucore;
+
+import kade.menucore.states.MenuSwitch;
+
+import funkin.modding.module.ModuleHandler;
+import funkin.modding.module.Module;
+import funkin.ui.mainmenu.MainMenuState;
+
+class MC_MainMenuStateHook extends Module {
+    public var shouldAllowMainMenu:Bool = false;
+    public var isTransitioning:Bool = false;
+    public var once:Bool = true;
+
+    public function new():Void {
+        super("MC_MainMenuStateHook", 1, {
+            state: MainMenuState
+        });
+    }
+
+    public override function onStateChangeEnd(event:StateChangeScriptEvent):Void {
+        super.onStateChangeEnd(event);
+
+        if (shouldAllowMainMenu)
+            return;
+
+        if (isTransitioning || FlxG.sound.music == null)
+            return;
+        
+        shouldAllowMainMenu = true;
+
+        trace("MC_MainMenuStateHook: Intercepted MainMenuState creation, switching to MenuSwitch instead");
+
+        var mcHandle = ModuleHandler.getModule("MC_Data");
+        if (mcHandle != null) {
+            mcHandle.dump();
+        }
+        
+        // So basically the idea here is that TitleState only transitions into the MainMenu.
+        // Which means we can theoretically "hook" into it by overriding this method and canceling the change.
+        // Thus, we can have a custom menu and change into other custom menus!
+
+        event.eventCanceled = true;
+
+        isTransitioning = true;
+
+        FlxG.switchState(new MenuSwitch());
+    }
+
+}

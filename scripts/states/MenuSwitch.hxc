@@ -70,7 +70,7 @@ class MenuSwitch extends MusicBeatState {
         versionDescriptions = mcHandle.versionDescriptions;
 
         bg = new FlxSprite();
-        bg.loadGraphic(Paths.image("mc_bg","shared"));
+        bg.loadGraphic(Paths.image("ui/menu-core/mc-bg"));
         bg.setGraphicSize(Std.int(FlxG.width * 1.2));
         bg.updateHitbox();
         bg.screenCenter();
@@ -83,12 +83,12 @@ class MenuSwitch extends MusicBeatState {
         add(chooseBlackBar);
 
         choose = new FlxText(Math.max(FullScreenScaleMode.gameNotchSize.x, 6), 2, FlxG.width, "CHOOSE THE VERSION");
-        choose.setFormat(Paths.font("vcr.ttf"), 55, 0xFFFFFFFF);
+        choose.setFormat(Paths.font("ui/fonts/VCR OSD Mono"), 55, 0xFFFFFFFF);
         choose.zIndex = 20;
         add(choose);
 
         topRightText = new FlxText(0, 15, FlxG.width / 2, "");
-        topRightText.setFormat(Paths.font("vcr.ttf"), 35, 0xFFFFFFFF, "right");
+        topRightText.setFormat(Paths.font("ui/fonts/VCR OSD Mono"), 35, 0xFFFFFFFF, "right");
         topRightText.x = (FlxG.width - topRightText.width - Math.max(FullScreenScaleMode.gameNotchSize.x, 10));
         topRightText.zIndex = 30;
         add(topRightText);
@@ -100,7 +100,7 @@ class MenuSwitch extends MusicBeatState {
         blackBar.zIndex = 40;
         add(blackBar);
 
-        leftSelect = FunkinSprite.createSparrow(0,0,"freeplay/freeplaySelector/freeplaySelector");
+        leftSelect = FunkinSprite.createSparrow(0,0,"ui/freeplay/interface/difficulty-selector");
         leftSelect.animation.addByPrefix('shine', 'arrow pointer loop', 24);
         leftSelect.animation.play("shine", true);
         leftSelect.x = FlxG.width / 8 - leftSelect.width / 2;
@@ -108,7 +108,7 @@ class MenuSwitch extends MusicBeatState {
         leftSelect.zIndex = 70;
         add(leftSelect);
 
-        rightSelect = FunkinSprite.createSparrow(0,0,"freeplay/freeplaySelector/freeplaySelector");
+        rightSelect = FunkinSprite.createSparrow(0,0,"ui/freeplay/interface/difficulty-selector");
         rightSelect.animation.addByPrefix('shine', 'arrow pointer loop', 24);
         rightSelect.animation.play("shine", true);
         rightSelect.x = FlxG.width - FlxG.width / 8 - rightSelect.width / 2;
@@ -135,7 +135,7 @@ class MenuSwitch extends MusicBeatState {
         versionImages = new Array();
 
         for (imageKey in mcHandle.versionImages) {
-            var sprite:FlxSprite = new FlxSprite().loadGraphic(Paths.image(imageKey, "shared"));
+            var sprite:FlxSprite = new FlxSprite().loadGraphic(Paths.image(imageKey));
             sprite.scale.set(0.8, 0.8);
             versionImages.push(sprite);
         }
@@ -168,14 +168,14 @@ class MenuSwitch extends MusicBeatState {
     public override function create():Void {
         super.create();
 
-        var titleHandle = ModuleHandler.getModule("MC_TitleStateHook");
+        var mainMenuHandle = ModuleHandler.getModule("MC_MainMenuStateHook");
 
-        if (titleHandle == null) {
-            trace("MenuSwitch: MC_TitleStateHook not found!");
+        if (mainMenuHandle == null) {
+            trace("MenuSwitch: MC_MainMenuStateHook not found!");
             return;
         }
 
-        titleHandle.isTransitioning = false;
+        mainMenuHandle.isTransitioning = false;
 
         populateVersions();
 
@@ -185,7 +185,7 @@ class MenuSwitch extends MusicBeatState {
             }, 0.3);
         }
 
-        FunkinSound.playMusic("menu-switch",
+        FunkinSound.playMusic("ui/menu-core/music/menu-switch/menu-switch",
         {
             startingVolume: 0,
             overrideExisting: true,
