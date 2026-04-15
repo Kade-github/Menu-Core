@@ -135,7 +135,7 @@ class MenuSwitch extends MusicBeatState {
         versionImages = new Array();
 
         for (imageKey in mcHandle.versionImages) {
-            var sprite:FlxSprite = new FlxSprite().loadGraphic(Paths.image(imageKey));
+            var sprite:FlxSprite = new FlxSprite().loadGraphic(Paths.image(imageKey, "shared"));
             sprite.scale.set(0.8, 0.8);
             versionImages.push(sprite);
         }
@@ -184,7 +184,7 @@ class MenuSwitch extends MusicBeatState {
                 backMobile = true;
             }, 0.3);
         }
-        
+
         FunkinSound.playMusic("menu-switch",
         {
             startingVolume: 0,
