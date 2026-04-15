@@ -70,7 +70,7 @@ class MenuSwitch extends MusicBeatState {
         versionDescriptions = mcHandle.versionDescriptions;
 
         bg = new FlxSprite();
-        bg.loadGraphic(Paths.image("ui/menu-core/mc-bg"));
+        bg.loadGraphic(Paths.image("mc_bg","shared"));
         bg.setGraphicSize(Std.int(FlxG.width * 1.2));
         bg.updateHitbox();
         bg.screenCenter();
@@ -83,12 +83,12 @@ class MenuSwitch extends MusicBeatState {
         add(chooseBlackBar);
 
         choose = new FlxText(Math.max(FullScreenScaleMode.gameNotchSize.x, 6), 2, FlxG.width, "CHOOSE THE VERSION");
-        choose.setFormat(Paths.font("ui/fonts/VCR OSD Mono"), 55, 0xFFFFFFFF);
+        choose.setFormat(Paths.font("vcr.ttf"), 55, 0xFFFFFFFF);
         choose.zIndex = 20;
         add(choose);
 
         topRightText = new FlxText(0, 15, FlxG.width / 2, "");
-        topRightText.setFormat(Paths.font("ui/fonts/VCR OSD Mono"), 35, 0xFFFFFFFF, "right");
+        topRightText.setFormat(Paths.font("vcr.ttf"), 35, 0xFFFFFFFF, "right");
         topRightText.x = (FlxG.width - topRightText.width - Math.max(FullScreenScaleMode.gameNotchSize.x, 10));
         topRightText.zIndex = 30;
         add(topRightText);
@@ -100,7 +100,7 @@ class MenuSwitch extends MusicBeatState {
         blackBar.zIndex = 40;
         add(blackBar);
 
-        leftSelect = FunkinSprite.createSparrow(0,0,"ui/freeplay/interface/difficulty-selector");
+        leftSelect = FunkinSprite.createSparrow(0,0,"freeplay/freeplaySelector/freeplaySelector");
         leftSelect.animation.addByPrefix('shine', 'arrow pointer loop', 24);
         leftSelect.animation.play("shine", true);
         leftSelect.x = FlxG.width / 8 - leftSelect.width / 2;
@@ -108,7 +108,7 @@ class MenuSwitch extends MusicBeatState {
         leftSelect.zIndex = 70;
         add(leftSelect);
 
-        rightSelect = FunkinSprite.createSparrow(0,0,"ui/freeplay/interface/difficulty-selector");
+        rightSelect = FunkinSprite.createSparrow(0,0,"freeplay/freeplaySelector/freeplaySelector");
         rightSelect.animation.addByPrefix('shine', 'arrow pointer loop', 24);
         rightSelect.animation.play("shine", true);
         rightSelect.x = FlxG.width - FlxG.width / 8 - rightSelect.width / 2;
@@ -184,8 +184,8 @@ class MenuSwitch extends MusicBeatState {
                 backMobile = true;
             }, 0.3);
         }
-
-        FunkinSound.playMusic("ui/menu-core/music/menu-switch/menu-switch",
+        
+        FunkinSound.playMusic("menu-switch",
         {
             startingVolume: 0,
             overrideExisting: true,
